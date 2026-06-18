@@ -23,12 +23,13 @@ export async function proxy(request: NextRequest) {
     }
   )
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // getClaims() reads from the session token — no network round-trip
+  const { data } = await supabase.auth.getClaims()
+  const user = data?.claims
 
-  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin')
-  const isAdminLogin = request.nextUrl.pathname === '/admin/login'
+  const { pathname } = request.nextUrl
+  const isAdminRoute = pathname.startsWith('/admin')
+  const isAdminLogin = pathname === '/admin/login'
 
   if (isAdminRoute && !isAdminLogin && !user) {
     return NextResponse.redirect(new URL('/admin/login', request.url))

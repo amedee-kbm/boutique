@@ -200,3 +200,54 @@ create policy "chat_messages: admin all"
   to authenticated
   using ((select public.is_admin()))
   with check ((select public.is_admin()));
+
+-- ============================================================
+-- Realtime
+-- Broadcast row changes on chat tables so the admin inbox and
+-- the customer widget receive live updates. Idempotent.
+-- ============================================================
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'chat_messages'
+  ) then
+    alter publication supabase_realtime add table public.chat_messages;
+  end if;
+
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'chat_sessions'
+  ) then
+    alter publication supabase_realtime add table public.chat_sessions;
+  end if;
+end $$;
+
+-- ============================================================
+-- Storage: product-images bucket
+-- Public read so customers can view photos; writes go through the
+-- service-role server action, but we add an admin policy for safety.
+-- ============================================================
+insert into storage.buckets (id, name, public)
+values ('product-images', 'product-images', true)
+on conflict (id) do update set public = true;
+
+drop policy if exists "product-images: public read" on storage.objects;
+drop policy if exists "product-images: admin write" on storage.objects;
+
+create policy "product-images: public read"
+  on storage.objects
+  for select
+  to anon, authenticated
+  using (bucket_id = 'product-images');
+
+create policy "product-images: admin write"
+  on storage.objects
+  for all
+  to authenticated
+  using (bucket_id = 'product-images' and (select public.is_admin()))
+  with check (bucket_id = 'product-images' and (select public.is_admin()));

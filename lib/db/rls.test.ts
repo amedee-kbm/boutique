@@ -75,8 +75,11 @@ beforeAll(async () => {
       email_confirm: true,
     }),
   ])
-  guestUid = r1.data.user!.id
-  otherGuestUid = r2.data.user!.id
+  if (r1.error || r2.error || !r1.data.user || !r2.data.user) {
+    throw new Error(`createUser failed: ${JSON.stringify(r1.error)} | ${JSON.stringify(r2.error)}`)
+  }
+  guestUid = r1.data.user.id
+  otherGuestUid = r2.data.user.id
 
   // Insert test fixtures using service_role (bypasses RLS)
   await supabase

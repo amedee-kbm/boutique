@@ -20,53 +20,81 @@ import { toast } from 'sonner'
 import {
   deleteProductImage,
   reorderProductImages,
+  updateProductImageAlt,
   uploadProductImage,
 } from '@/lib/actions/products'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 interface ProductImage {
   id: string
   url: string
+  alt: string | null
 }
 
-function SortableImage({ image, onDelete }: { image: ProductImage; onDelete: () => void }) {
+function SortableImage({
+  image,
+  onDelete,
+  onAltSave,
+}: {
+  image: ProductImage
+  onDelete: () => void
+  onAltSave: (alt: string) => void
+}) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: image.id,
   })
+  const isTemp = image.id.startsWith('temp-')
 
   return (
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={cn(
-        'group bg-muted relative aspect-square overflow-hidden rounded-lg border',
-        isDragging && 'ring-ring z-10 opacity-80 ring-2'
-      )}
+      className={cn('space-y-1', isDragging && 'z-10 opacity-80')}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={image.url} alt="" className="size-full object-cover" />
-
-      <button
-        type="button"
-        {...attributes}
-        {...listeners}
-        aria-label="Drag to reorder"
-        className="bg-background/80 text-foreground absolute top-1 left-1 flex size-7 touch-none items-center justify-center rounded-md opacity-0 transition-opacity group-hover:opacity-100"
+      <div
+        className={cn(
+          'group bg-muted relative aspect-square overflow-hidden rounded-lg border',
+          isDragging && 'ring-ring ring-2'
+        )}
       >
-        <GripVertical className="size-4" />
-      </button>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={image.url} alt={image.alt ?? ''} className="size-full object-cover" />
 
-      <Button
-        type="button"
-        variant="destructive"
-        size="icon-sm"
-        onClick={onDelete}
-        aria-label="Remove image"
-        className="absolute top-1 right-1 opacity-0 transition-opacity group-hover:opacity-100"
-      >
-        <X className="size-4" />
-      </Button>
+        <button
+          type="button"
+          {...attributes}
+          {...listeners}
+          aria-label="Drag to reorder"
+          className="bg-background/80 text-foreground absolute top-1 left-1 flex size-7 touch-none items-center justify-center rounded-md opacity-0 transition-opacity group-hover:opacity-100"
+        >
+          <GripVertical className="size-4" />
+        </button>
+
+        <Button
+          type="button"
+          variant="destructive"
+          size="icon-sm"
+          onClick={onDelete}
+          aria-label="Remove image"
+          className="absolute top-1 right-1 opacity-0 transition-opacity group-hover:opacity-100"
+        >
+          <X className="size-4" />
+        </Button>
+      </div>
+
+      <Input
+        defaultValue={image.alt ?? ''}
+        disabled={isTemp}
+        placeholder="Alt text (optional)"
+        aria-label="Image alt text"
+        className="h-7 text-xs"
+        onBlur={(e) => {
+          if (isTemp) return
+          if (e.target.value.trim() !== (image.alt ?? '')) onAltSave(e.target.value)
+        }}
+      />
     </div>
   )
 }
@@ -102,7 +130,7 @@ export function ProductImageManager({
             continue
           }
           // Optimistic: id unknown until refresh, use url as temp key replaced on reload
-          setImages((prev) => [...prev, { id: `temp-${result.url}`, url: result.url! }])
+          setImages((prev) => [...prev, { id: `temp-${result.url}`, url: result.url!, alt: null }])
         }
         toast.success('Images uploaded')
         router.refresh()
@@ -120,6 +148,16 @@ export function ProductImageManager({
         toast.error(result.error)
         setImages(previous)
       }
+    })
+  }
+
+  function handleAltSave(id: string, alt: string) {
+    setImages((prev) =>
+      prev.map((img) => (img.id === id ? { ...img, alt: alt.trim() || null } : img))
+    )
+    startUpload(async () => {
+      const result = await updateProductImageAlt(id, alt)
+      if (result.error) toast.error(result.error)
     })
   }
 
@@ -172,6 +210,7 @@ export function ProductImageManager({
                   key={image.id}
                   image={image}
                   onDelete={() => handleDelete(image.id)}
+                  onAltSave={(alt) => handleAltSave(image.id, alt)}
                 />
               ))}
             </div>

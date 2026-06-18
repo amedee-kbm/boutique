@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ProductForm } from '@/components/admin/ProductForm'
 import { ProductImageManager } from '@/components/admin/ProductImageManager'
+import { VariantManager } from '@/components/admin/VariantManager'
 
 export const metadata: Metadata = { title: 'Edit product — Zita Boutique' }
 
@@ -40,18 +41,33 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
           }}
         />
 
-        <Card className="h-fit">
-          <CardHeader>
-            <CardTitle>Photos</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ProductImageManager
-              key={product.images.map((img) => img.id).join(',')}
-              productId={product.id}
-              initialImages={product.images.map((img) => ({ id: img.id, url: img.url }))}
-            />
-          </CardContent>
-        </Card>
+        <div className="space-y-6">
+          <Card className="h-fit">
+            <CardHeader>
+              <CardTitle>Photos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ProductImageManager
+                key={product.images.map((img) => img.id).join(',')}
+                productId={product.id}
+                initialImages={product.images.map((img) => ({
+                  id: img.id,
+                  url: img.url,
+                  alt: img.alt,
+                }))}
+              />
+            </CardContent>
+          </Card>
+
+          <Card className="h-fit">
+            <CardHeader>
+              <CardTitle>Variants</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <VariantManager productId={product.id} initialGroups={product.variantGroups} />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </>
   )

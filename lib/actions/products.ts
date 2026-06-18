@@ -152,6 +152,24 @@ export async function uploadProductImage(productId: string, formData: FormData) 
   return { error: null, url: publicUrl }
 }
 
+export async function updateProductImageAlt(imageId: string, alt: string) {
+  const rows = await db
+    .select({ productId: productImages.productId })
+    .from(productImages)
+    .where(eq(productImages.id, imageId))
+    .limit(1)
+
+  if (!rows[0]) return { error: 'Image not found' }
+
+  await db
+    .update(productImages)
+    .set({ alt: alt.trim() || null })
+    .where(eq(productImages.id, imageId))
+
+  revalidatePath(`/admin/products/${rows[0].productId}/edit`)
+  return { error: null }
+}
+
 export async function deleteProductImage(imageId: string) {
   const rows = await db
     .select({ url: productImages.url, productId: productImages.productId })

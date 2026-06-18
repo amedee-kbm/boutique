@@ -1,7 +1,15 @@
-import { asc, count, desc, eq, sql } from 'drizzle-orm'
+import { asc, count, desc, eq, inArray, sql } from 'drizzle-orm'
 
 import { db } from '@/lib/db'
-import { categories, chatMessages, chatSessions, productImages, products } from '@/lib/db/schema'
+import {
+  categories,
+  chatMessages,
+  chatSessions,
+  productImages,
+  products,
+  productVariantGroups,
+  productVariantOptions,
+} from '@/lib/db/schema'
 
 export async function getDashboardStats() {
   const [productResult, categoryResult, chatResult] = await Promise.all([
@@ -96,13 +104,45 @@ export async function getProductById(id: string) {
 
   if (!rows[0]) return null
 
-  const images = await db
-    .select()
-    .from(productImages)
-    .where(eq(productImages.productId, id))
-    .orderBy(asc(productImages.position))
+  const [images, groups] = await Promise.all([
+    db
+      .select()
+      .from(productImages)
+      .where(eq(productImages.productId, id))
+      .orderBy(asc(productImages.position)),
+    db
+      .select({
+        id: productVariantGroups.id,
+        name: productVariantGroups.name,
+        position: productVariantGroups.position,
+      })
+      .from(productVariantGroups)
+      .where(eq(productVariantGroups.productId, id))
+      .orderBy(asc(productVariantGroups.position)),
+  ])
 
-  return { ...rows[0], images }
+  const groupIds = groups.map((g) => g.id)
+  const options = groupIds.length
+    ? await db
+        .select({
+          id: productVariantOptions.id,
+          groupId: productVariantOptions.groupId,
+          value: productVariantOptions.value,
+        })
+        .from(productVariantOptions)
+        .where(inArray(productVariantOptions.groupId, groupIds))
+        .orderBy(asc(productVariantOptions.position))
+    : []
+
+  const variantGroups = groups.map((group) => ({
+    id: group.id,
+    name: group.name,
+    options: options
+      .filter((o) => o.groupId === group.id)
+      .map((o) => ({ id: o.id, value: o.value })),
+  }))
+
+  return { ...rows[0], images, variantGroups }
 }
 
 export async function getAllChatSessions() {

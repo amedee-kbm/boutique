@@ -32,6 +32,7 @@ export const productImages = pgTable('product_images', {
 export const chatSessions = pgTable('chat_sessions', {
   id: uuid('id').primaryKey().defaultRandom(),
   guestName: text('guest_name').notNull(),
+  createdBy: uuid('created_by'), // auth.uid() of the anonymous guest — used for RLS
   createdAt: timestamp('created_at').notNull().defaultNow(),
   lastMessageAt: timestamp('last_message_at'),
 })

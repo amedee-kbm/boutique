@@ -15,6 +15,7 @@
     "db:generate": "node --env-file=.env.local node_modules/drizzle-kit/bin.cjs generate",
     "db:migrate": "node --env-file=.env.local node_modules/drizzle-kit/bin.cjs migrate",
     "db:studio": "node --env-file=.env.local node_modules/drizzle-kit/bin.cjs studio",
+    "db:rls": "node --env-file=.env.local scripts/apply-rls.mjs",
     "prepare": "husky"
   },
   "lint-staged": {

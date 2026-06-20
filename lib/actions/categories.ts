@@ -2,19 +2,10 @@
 
 import { revalidatePath } from 'next/cache'
 import { eq } from 'drizzle-orm'
-import { z } from 'zod'
 
 import { db } from '@/lib/db'
 import { categories } from '@/lib/db/schema'
-
-export const categoryFormSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(100),
-  slug: z
-    .string()
-    .min(1, 'Slug is required')
-    .max(100)
-    .regex(/^[a-z0-9-]+$/, 'Lowercase letters, numbers, and hyphens only'),
-})
+import { categoryFormSchema } from '@/lib/actions/categories.schema'
 
 function slugify(str: string): string {
   return str

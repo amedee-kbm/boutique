@@ -2,18 +2,10 @@
 
 import { revalidatePath } from 'next/cache'
 import { asc, eq } from 'drizzle-orm'
-import { z } from 'zod'
 
 import { db } from '@/lib/db'
 import { productVariantGroups, productVariantOptions } from '@/lib/db/schema'
-
-export const variantGroupSchema = z.object({
-  name: z.string().min(1, 'Group name is required').max(50),
-})
-
-export const variantOptionSchema = z.object({
-  value: z.string().min(1, 'Option is required').max(50),
-})
+import { variantGroupSchema, variantOptionSchema } from '@/lib/actions/variants.schema'
 
 async function nextPosition(rows: { position: number }[]) {
   return rows.length > 0 ? (rows[rows.length - 1]?.position ?? -1) + 1 : 0

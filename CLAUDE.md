@@ -108,6 +108,32 @@ Zita Boutique is a mobile-first fashion ecommerce storefront. The store sells af
 
 ---
 
+## Admin UI Patterns
+
+The admin panel must **not** be hand-designed screen by screen. Every admin screen is **assembled from the named patterns below**, which mirror the **Shopify mobile admin** model (proven for non-technical sellers). When building an admin screen, cite the pattern (e.g. "P3 FieldRow → P4 SubScreen") and compose the existing primitive — **do not invent new layouts, spacing systems, or interaction models.** If a screen needs something no pattern covers, add a new pattern here first, then build it.
+
+Primitives live in `components/admin/ui/` and are composed from our Base UI / shadcn components in `components/ui/` (this project uses **Base UI** `@base-ui/react`, not Radix — use the `render` prop for polymorphism, and `Sheet` with `side="bottom"` for full-height panels).
+
+| ID     | Pattern              | What it is                                                                                                                                                                                                                          | Built from                            |
+| ------ | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| **P1** | `EditorHeader`       | Sticky top bar: leading dismiss (Cancel/✕) · centered title or status selector · trailing **Save** primary action. Save is always top-right.                                                                                        | `Button`, `DropdownMenu` (status)     |
+| **P2** | `MediaZone`          | Bordered upload card pinned at the **top** of an editor: "Add images…". Staged photos preview + drag-to-reorder; first image is the main photo. In create mode, files stage locally and upload on Save.                             | `Card`, react-dropzone, `@dnd-kit`    |
+| **P3** | `FieldRow`           | Tappable row: leading `+`/icon · label or current value · trailing chevron. Opens a focused sub-screen. Used for description, category, price, variants.                                                                            | `Button`/`<button>`, `lucide` chevron |
+| **P4** | `SubScreen`          | Full-height bottom `Sheet` for one focused field. Own header: ✕ dismiss · title (+ optional subtitle) · trailing **Save**/**Done**. Edits are committed back to the parent editor on Save, persisted only when the parent is saved. | `Sheet` (`side="bottom"`)             |
+| **P5** | `SectionCard`        | Grouped section with a label and a card body (e.g. Media, Variants, Inventory).                                                                                                                                                     | `Card`                                |
+| **P6** | `FloatingLabelInput` | Input with the field label sitting small inside the box, value below; optional helper text underneath ("Customers won't see this").                                                                                                 | `Input`, `Label`                      |
+| **P7** | `FilterChips`        | Segmented chip row for list filtering (All / Active / Draft / Archived).                                                                                                                                                            | `Button` (toggle styling)             |
+| **P8** | `ListRow`            | List item: leading thumbnail · title · meta line (`19,998 available · 6 variants`) · optional accent warning.                                                                                                                       | `<li>`/`Card`, `next/image`           |
+
+Rules:
+
+- **Progressive disclosure, not flat forms.** A product editor is a short scroll: `MediaZone` (P2) → title → `FieldRow`s (P3) that open `SubScreen`s (P4). Do not dump every field onto one page.
+- **Save lives in the header (P1), top-right** — never a stray button mid-form. Sub-screens have their own Save (P4) that commits to parent state only.
+- **One source of pattern truth.** Reuse the primitive; never re-implement a header/row/sheet inline.
+- Still bound by **Mobile-First Guidelines** above (375px base, 44×44px targets, touch-only).
+
+---
+
 ## Catalog Structure
 
 - **Categories only** (e.g. Tops, Bottoms, Dresses, Accessories, Shoes)

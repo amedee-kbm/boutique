@@ -5,7 +5,7 @@ import { Plus } from 'lucide-react'
 import { getAllProducts } from '@/lib/db/queries'
 import { PageHeader } from '@/components/admin/PageHeader'
 import { Button } from '@/components/ui/button'
-import { ProductsTable } from '@/components/admin/ProductsTable'
+import { ProductsList } from '@/components/admin/ProductsList'
 
 export const metadata: Metadata = { title: 'Products — Zita Boutique' }
 
@@ -24,7 +24,7 @@ export default async function ProductsPage() {
           </Button>
         }
       />
-      <ProductsTable products={products} />
+      <ProductsList products={products} />
     </>
   )
 }

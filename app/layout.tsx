@@ -1,16 +1,20 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Bricolage_Grotesque, Figtree } from 'next/font/google'
 import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+// Deliberate pairing: a characterful display face for headings, a highly legible
+// body face for product/admin copy — chosen over the Geist starter default.
+const display = Bricolage_Grotesque({
+  variable: '--font-heading',
   subsets: ['latin'],
+  display: 'swap',
 })
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const body = Figtree({
+  variable: '--font-sans',
   subsets: ['latin'],
+  display: 'swap',
 })
 
 export const metadata: Metadata = {
@@ -20,8 +24,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">
+    <html lang="en" className={`${body.variable} ${display.variable} h-full antialiased`}>
+      <body className="flex min-h-full flex-col font-sans">
         {children}
         <Toaster richColors position="top-center" />
       </body>

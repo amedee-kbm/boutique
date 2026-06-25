@@ -1,6 +1,6 @@
 'use client'
 
-import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
 import { Toaster as Sonner, type ToasterProps } from 'sonner'
 import {
   CircleCheckIcon,
@@ -11,11 +11,20 @@ import {
 } from 'lucide-react'
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = 'system' } = useTheme()
+  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+
+  useEffect(() => {
+    const el = document.documentElement
+    const sync = () => setTheme(el.classList.contains('dark') ? 'dark' : 'light')
+    sync()
+    const observer = new MutationObserver(sync)
+    observer.observe(el, { attributes: true, attributeFilter: ['class'] })
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <Sonner
-      theme={theme as ToasterProps['theme']}
+      theme={theme}
       className="toaster group"
       icons={{
         success: <CircleCheckIcon className="size-4" />,

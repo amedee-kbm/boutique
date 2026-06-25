@@ -6,6 +6,7 @@ import { LayoutDashboard, MessageCircle, Package, Tag } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import { LogoutButton } from '@/components/logout-button'
+import { ThemeToggle } from '@/components/admin/ThemeToggle'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 
@@ -60,6 +61,7 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
           </Avatar>
           <span className="text-muted-foreground truncate text-xs">{userEmail}</span>
         </div>
+        <ThemeToggle />
         <LogoutButton />
       </div>
     </aside>

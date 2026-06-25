@@ -69,9 +69,7 @@ export function ProductEditor({
   const [variantGroups, setVariantGroups] = useState<StagedVariantGroup[]>([])
 
   const [priceOpen, setPriceOpen] = useState(false)
-  const [priceDraft, setPriceDraft] = useState('')
   const [descOpen, setDescOpen] = useState(false)
-  const [descDraft, setDescDraft] = useState('')
   const [categoryOpen, setCategoryOpen] = useState(false)
   const [variantsOpen, setVariantsOpen] = useState(false)
 
@@ -186,10 +184,7 @@ export function ProductEditor({
               label="Description"
               value={description}
               emptyLabel="Add description"
-              onClick={() => {
-                setDescDraft(description)
-                setDescOpen(true)
-              }}
+              onClick={() => setDescOpen(true)}
             />
             <FieldRow
               label="Category"
@@ -201,10 +196,7 @@ export function ProductEditor({
               label="Price"
               value={price ? formatPrice(price) : undefined}
               emptyLabel="Set price"
-              onClick={() => {
-                setPriceDraft(price)
-                setPriceOpen(true)
-              }}
+              onClick={() => setPriceOpen(true)}
             />
             <FieldRow
               label="Variants"
@@ -228,44 +220,27 @@ export function ProductEditor({
         </div>
       </SectionCard>
 
-      <SubScreen
-        open={descOpen}
-        onOpenChange={setDescOpen}
-        title="Description"
-        saveLabel="Done"
-        onSave={() => setDescription(descDraft)}
-      >
+      <SubScreen open={descOpen} onOpenChange={setDescOpen} title="Description">
         <textarea
           aria-label="Product description"
-          value={descDraft}
-          onChange={(e) => setDescDraft(e.target.value)}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
           placeholder="Describe the fabric, fit, sizes available…"
           className="h-full min-h-60 w-full resize-none border-0 text-sm outline-none"
         />
       </SubScreen>
 
-      <SubScreen
-        open={priceOpen}
-        onOpenChange={setPriceOpen}
-        title="Price"
-        saveLabel="Done"
-        onSave={() => setPrice(priceDraft)}
-      >
+      <SubScreen open={priceOpen} onOpenChange={setPriceOpen} title="Price">
         <FloatingLabelInput
           label="Price (RWF)"
           inputMode="numeric"
-          value={priceDraft}
-          onChange={(e) => setPriceDraft(e.target.value)}
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
           placeholder="5000"
         />
       </SubScreen>
 
-      <SubScreen
-        open={categoryOpen}
-        onOpenChange={setCategoryOpen}
-        title="Category"
-        saveLabel="Done"
-      >
+      <SubScreen open={categoryOpen} onOpenChange={setCategoryOpen} title="Category">
         <div className="divide-y">
           <Button
             type="button"
@@ -295,12 +270,7 @@ export function ProductEditor({
         </div>
       </SubScreen>
 
-      <SubScreen
-        open={variantsOpen}
-        onOpenChange={setVariantsOpen}
-        title="Variants"
-        saveLabel="Done"
-      >
+      <SubScreen open={variantsOpen} onOpenChange={setVariantsOpen} title="Variants">
         {product ? (
           <VariantManager productId={product.id} initialGroups={product.variantGroups} />
         ) : (

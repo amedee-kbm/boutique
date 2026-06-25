@@ -12,6 +12,11 @@ interface SubScreenProps {
   trigger?: ReactNode
   title: string
   subtitle?: string
+  /**
+   * Optional explicit commit action. Omit for single-field editors that commit
+   * live to the parent editor — the ✕ then just closes the panel, with no
+   * redundant "Done" button (the parent's header Save is the real persist).
+   */
   saveLabel?: string
   onSave?: () => void
   children: ReactNode
@@ -46,13 +51,15 @@ export function SubScreen({
             {subtitle && <p className="text-muted-foreground text-xs">{subtitle}</p>}
           </div>
           <div className="justify-self-end">
-            <SheetClose
-              render={
-                <Button type="button" size="sm" onClick={onSave}>
-                  {saveLabel}
-                </Button>
-              }
-            />
+            {onSave && (
+              <SheetClose
+                render={
+                  <Button type="button" size="sm" onClick={onSave}>
+                    {saveLabel}
+                  </Button>
+                }
+              />
+            )}
           </div>
         </header>
 

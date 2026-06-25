@@ -69,6 +69,7 @@ export function ProductEditor({
   const [variantGroups, setVariantGroups] = useState<StagedVariantGroup[]>([])
 
   const [priceOpen, setPriceOpen] = useState(false)
+  const [priceDraft, setPriceDraft] = useState('')
   const [descOpen, setDescOpen] = useState(false)
   const [categoryOpen, setCategoryOpen] = useState(false)
   const [variantsOpen, setVariantsOpen] = useState(false)
@@ -196,7 +197,10 @@ export function ProductEditor({
               label="Price"
               value={price ? formatPrice(price) : undefined}
               emptyLabel="Set price"
-              onClick={() => setPriceOpen(true)}
+              onClick={() => {
+                setPriceDraft(price)
+                setPriceOpen(true)
+              }}
             />
             <FieldRow
               label="Variants"
@@ -230,12 +234,19 @@ export function ProductEditor({
         />
       </SubScreen>
 
-      <SubScreen open={priceOpen} onOpenChange={setPriceOpen} title="Price">
+      <SubScreen
+        open={priceOpen}
+        onOpenChange={setPriceOpen}
+        title="Price"
+        saveLabel="Done"
+        onSave={() => setPrice(priceDraft)}
+      >
         <FloatingLabelInput
-          label="Price (RWF)"
+          label="Price"
+          prefix="RWF"
           inputMode="numeric"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
+          value={priceDraft}
+          onChange={(e) => setPriceDraft(e.target.value)}
           placeholder="5000"
         />
       </SubScreen>

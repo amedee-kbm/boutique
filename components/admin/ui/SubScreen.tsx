@@ -35,7 +35,11 @@ export function SubScreen({
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       {trigger && <SheetTrigger render={trigger as React.ReactElement} />}
-      <SheetContent side="bottom" showCloseButton={false} className="h-[92dvh] gap-0 p-0">
+      <SheetContent
+        side="bottom"
+        showCloseButton={false}
+        className="gap-0 p-0 data-[side=bottom]:h-[92dvh]"
+      >
         <header className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 border-b px-3 py-2.5">
           <div className="justify-self-start">
             <SheetClose

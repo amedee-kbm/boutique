@@ -91,9 +91,8 @@ describe('ProductEditor (create)', () => {
     await user.type(screen.getByLabelText('Product title'), 'Floral Dress')
 
     await user.click(screen.getByRole('button', { name: /set price/i }))
-    // Price commits live to the editor — no "Done"; closing the panel keeps it.
-    await user.type(await screen.findByLabelText('Price (RWF)'), '21.99')
-    await user.click(screen.getByRole('button', { name: /close/i }))
+    await user.type(await screen.findByLabelText('Price'), '21.99')
+    await user.click(screen.getByRole('button', { name: 'Done' }))
 
     await user.click(screen.getByRole('button', { name: 'Save' }))
 

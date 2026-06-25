@@ -44,7 +44,7 @@ test('admin can create a product through the single-screen editor and delete it'
 
   // Save lands on the edit page titled with the product name.
   await expect(page).toHaveURL(/\/admin\/products\/.+\/edit/, { timeout: 20000 })
-  await expect(page.getByRole('heading', { name })).toBeVisible()
+  await expect(page.getByLabel('Product title')).toHaveValue(name)
 
   await page.goto('/admin/products')
   await expect(page.getByRole('link', { name })).toBeVisible()
@@ -76,7 +76,7 @@ test('admin can add details and a photo in one go, and the photo persists', asyn
   await page.getByRole('button', { name: 'Save' }).click()
 
   await expect(page).toHaveURL(/\/admin\/products\/.+\/edit/, { timeout: 20000 })
-  await expect(page.getByRole('heading', { name })).toBeVisible()
+  await expect(page.getByLabel('Product title')).toHaveValue(name)
 
   // The photo persisted: the edit page's image manager renders its alt-text field.
   await expect(page.getByLabel('Image alt text')).toBeVisible({ timeout: 20000 })

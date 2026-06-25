@@ -4,9 +4,11 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
-import { createProduct, uploadProductImage } from '@/lib/actions/products'
+import { createProduct, updateProduct, uploadProductImage } from '@/lib/actions/products'
 import { addVariantGroup, addVariantOption } from '@/lib/actions/variants'
 import { VariantStager, type StagedVariantGroup } from '@/components/admin/VariantStager'
+import { VariantManager } from '@/components/admin/VariantManager'
+import { ProductImageManager } from '@/components/admin/ProductImageManager'
 import { EditorHeader } from '@/components/admin/ui/EditorHeader'
 import { FieldRow } from '@/components/admin/ui/FieldRow'
 import { SubScreen } from '@/components/admin/ui/SubScreen'
@@ -22,17 +24,47 @@ interface Category {
   name: string
 }
 
-export function ProductCreateForm({ categories }: { categories: Category[] }) {
+interface ProductImage {
+  id: string
+  url: string
+  alt: string | null
+}
+
+interface VariantGroup {
+  id: string
+  name: string
+  options: { id: string; value: string }[]
+}
+
+interface Product {
+  id: string
+  name: string
+  slug: string
+  description: string | null
+  price: string
+  categoryId: string | null
+  visible: boolean
+  images: ProductImage[]
+  variantGroups: VariantGroup[]
+}
+
+export function ProductEditor({
+  categories,
+  product,
+}: {
+  categories: Category[]
+  product?: Product
+}) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
+  const isEditing = Boolean(product)
 
-  const [name, setName] = useState('')
-  const [price, setPrice] = useState('')
-  const [description, setDescription] = useState('')
-  const [categoryId, setCategoryId] = useState<string>('')
-  const [visible, setVisible] = useState(true)
+  const [name, setName] = useState(product?.name ?? '')
+  const [price, setPrice] = useState(product?.price ?? '')
+  const [description, setDescription] = useState(product?.description ?? '')
+  const [categoryId, setCategoryId] = useState(product?.categoryId ?? '')
+  const [visible, setVisible] = useState(product?.visible ?? true)
   const [files, setFiles] = useState<File[]>([])
-
   const [variantGroups, setVariantGroups] = useState<StagedVariantGroup[]>([])
 
   const [priceOpen, setPriceOpen] = useState(false)
@@ -44,6 +76,22 @@ export function ProductCreateForm({ categories }: { categories: Category[] }) {
 
   const categoryName = categories.find((c) => c.id === categoryId)?.name
 
+  const variantSummary = isEditing
+    ? product!.variantGroups.map((g) => g.name).join(', ') || undefined
+    : variantGroups.length
+      ? variantGroups.map((g) => g.name).join(', ')
+      : undefined
+
+  function buildFormData() {
+    const formData = new FormData()
+    formData.set('name', name)
+    formData.set('price', price)
+    if (description) formData.set('description', description)
+    formData.set('categoryId', categoryId)
+    formData.set('visible', String(visible))
+    return formData
+  }
+
   function handleSave() {
     if (!name.trim()) {
       toast.error('Add a product title')
@@ -51,12 +99,20 @@ export function ProductCreateForm({ categories }: { categories: Category[] }) {
     }
 
     startTransition(async () => {
-      const formData = new FormData()
-      formData.set('name', name)
-      formData.set('price', price)
-      if (description) formData.set('description', description)
-      formData.set('categoryId', categoryId)
-      formData.set('visible', String(visible))
+      const formData = buildFormData()
+
+      if (product) {
+        // Keep the existing slug so store links stay stable.
+        formData.set('slug', product.slug)
+        const result = await updateProduct(product.id, formData)
+        if (result.error) {
+          toast.error(result.error)
+          return
+        }
+        toast.success('Product saved')
+        router.refresh()
+        return
+      }
 
       const result = await createProduct(formData)
       if (result.error || !result.id) {
@@ -91,7 +147,7 @@ export function ProductCreateForm({ categories }: { categories: Category[] }) {
   return (
     <div className="space-y-5">
       <EditorHeader
-        title="New product"
+        title={product ? product.name : 'New product'}
         saveType="button"
         saving={isPending}
         onSave={handleSave}
@@ -99,7 +155,15 @@ export function ProductCreateForm({ categories }: { categories: Category[] }) {
       />
 
       <SectionCard label="Media">
-        <MediaZone onChange={setFiles} />
+        {product ? (
+          <ProductImageManager
+            key={product.images.map((img) => img.id).join(',')}
+            productId={product.id}
+            initialImages={product.images}
+          />
+        ) : (
+          <MediaZone onChange={setFiles} />
+        )}
       </SectionCard>
 
       <div className="space-y-3">
@@ -139,7 +203,7 @@ export function ProductCreateForm({ categories }: { categories: Category[] }) {
             />
             <FieldRow
               label="Variants"
-              value={variantGroups.length ? variantGroups.map((g) => g.name).join(', ') : undefined}
+              value={variantSummary}
               emptyLabel="Add options (color, size, etc.)"
               onClick={() => setVariantsOpen(true)}
             />
@@ -232,7 +296,11 @@ export function ProductCreateForm({ categories }: { categories: Category[] }) {
         title="Variants"
         saveLabel="Done"
       >
-        <VariantStager groups={variantGroups} onChange={setVariantGroups} />
+        {product ? (
+          <VariantManager productId={product.id} initialGroups={product.variantGroups} />
+        ) : (
+          <VariantStager groups={variantGroups} onChange={setVariantGroups} />
+        )}
       </SubScreen>
     </div>
   )

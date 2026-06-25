@@ -5,6 +5,7 @@ import { Search, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { deleteProduct, toggleProductVisibility } from '@/lib/actions/products'
+import { formatPrice } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
@@ -95,7 +96,7 @@ export function ProductsList({ products }: { products: Product[] }) {
               href={`/admin/products/${product.id}/edit`}
               thumbnail={product.thumbnail}
               title={product.name}
-              meta={`$${product.price} · ${product.categoryName ?? 'Uncategorized'}`}
+              meta={`${formatPrice(product.price)} · ${product.categoryName ?? 'Uncategorized'}`}
               accent={product.visible ? undefined : 'Hidden'}
               actions={
                 <>
@@ -108,7 +109,12 @@ export function ProductsList({ products }: { products: Product[] }) {
                       await deleteProduct(product.id)
                     }}
                     trigger={
-                      <Button variant="ghost" size="icon-sm" aria-label="Delete product">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        className="size-11 md:size-7"
+                        aria-label="Delete product"
+                      >
                         <Trash2 className="text-destructive size-4" />
                       </Button>
                     }

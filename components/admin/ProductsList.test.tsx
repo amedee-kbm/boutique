@@ -16,7 +16,7 @@ const products = [
   {
     id: 'p1',
     name: 'Floral Dress',
-    price: '29.99',
+    price: '5000',
     visible: true,
     categoryName: 'Dresses',
     thumbnail: null,
@@ -24,7 +24,7 @@ const products = [
   {
     id: 'p2',
     name: 'Hidden Top',
-    price: '9.50',
+    price: '1500',
     visible: false,
     categoryName: null,
     thumbnail: null,
@@ -44,8 +44,8 @@ describe('ProductsList', () => {
   it('renders a row per product with title, price and category', () => {
     render(<ProductsList products={products} />)
     expect(screen.getByRole('link', { name: 'Floral Dress' })).toBeInTheDocument()
-    expect(screen.getByText('$29.99 · Dresses')).toBeInTheDocument()
-    expect(screen.getByText('$9.50 · Uncategorized')).toBeInTheDocument()
+    expect(screen.getByText('RWF 5,000 · Dresses')).toBeInTheDocument()
+    expect(screen.getByText('RWF 1,500 · Uncategorized')).toBeInTheDocument()
   })
 
   it('flags hidden products', () => {

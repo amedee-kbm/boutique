@@ -5,9 +5,9 @@ import { ListRow } from '@/components/admin/ui/ListRow'
 
 describe('ListRow', () => {
   it('renders title, meta and accent', () => {
-    render(<ListRow title="Floral Dress" meta="$29.99 · Dresses" accent="Hidden" />)
+    render(<ListRow title="Floral Dress" meta="RWF 5,000 · Dresses" accent="Hidden" />)
     expect(screen.getByText('Floral Dress')).toBeInTheDocument()
-    expect(screen.getByText('$29.99 · Dresses')).toBeInTheDocument()
+    expect(screen.getByText('RWF 5,000 · Dresses')).toBeInTheDocument()
     expect(screen.getByText('Hidden')).toBeInTheDocument()
   })
 

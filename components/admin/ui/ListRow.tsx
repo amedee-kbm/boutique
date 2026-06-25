@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import Link from 'next/link'
 
 import { cn } from '@/lib/utils'
+import { ProductThumb } from '@/components/admin/ProductThumb'
 
 interface ListRowProps {
   href?: string
@@ -37,10 +38,8 @@ export function ListRow({
 
   return (
     <li className={cn('flex items-center gap-3 py-3', className)}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={thumbnail ?? '/placeholder.svg'}
-        alt=""
+      <ProductThumb
+        src={thumbnail}
         className="bg-muted size-12 shrink-0 rounded-md border object-cover"
       />
 

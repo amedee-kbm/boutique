@@ -8,7 +8,7 @@ export const productFormSchema = z.object({
     .max(200)
     .regex(/^[a-z0-9-]+$/, 'Lowercase letters, numbers, and hyphens only'),
   description: z.string().optional(),
-  price: z.string().regex(/^\d+(\.\d{1,2})?$/, 'Enter a valid price like 29.99'),
+  price: z.string().regex(/^\d+(\.\d{1,2})?$/, 'Enter a valid price like 5000'),
   categoryId: z.string().uuid().optional().nullable(),
   visible: z.boolean().default(true),
 })

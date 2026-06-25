@@ -3,7 +3,9 @@ import { MessageCircle, Package, Plus, Tag } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 
 import { getDashboardStats, getRecentProducts } from '@/lib/db/queries'
+import { formatPrice } from '@/lib/format'
 import { PageHeader } from '@/components/admin/PageHeader'
+import { ProductThumb } from '@/components/admin/ProductThumb'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -62,10 +64,8 @@ export default async function DashboardPage() {
             <ul className="divide-y">
               {recent.map((p) => (
                 <li key={p.id} className="flex items-center gap-3 py-3">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={p.thumbnail ?? '/placeholder.svg'}
-                    alt=""
+                  <ProductThumb
+                    src={p.thumbnail}
                     className="bg-muted size-10 shrink-0 rounded-md border object-cover"
                   />
                   <div className="min-w-0 flex-1">
@@ -81,7 +81,7 @@ export default async function DashboardPage() {
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium">${p.price}</span>
+                    <span className="text-sm font-medium">{formatPrice(p.price)}</span>
                     {!p.visible && <Badge variant="secondary">Hidden</Badge>}
                   </div>
                 </li>

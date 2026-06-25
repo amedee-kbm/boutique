@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 import { createProduct, updateProduct, uploadProductImage } from '@/lib/actions/products'
+import { formatPrice } from '@/lib/format'
 import { addVariantGroup, addVariantOption } from '@/lib/actions/variants'
 import { VariantStager, type StagedVariantGroup } from '@/components/admin/VariantStager'
 import { VariantManager } from '@/components/admin/VariantManager'
@@ -198,7 +199,7 @@ export function ProductEditor({
             />
             <FieldRow
               label="Price"
-              value={price ? `$${price}` : undefined}
+              value={price ? formatPrice(price) : undefined}
               emptyLabel="Set price"
               onClick={() => {
                 setPriceDraft(price)
@@ -251,11 +252,11 @@ export function ProductEditor({
         onSave={() => setPrice(priceDraft)}
       >
         <FloatingLabelInput
-          label="Price"
-          inputMode="decimal"
+          label="Price (RWF)"
+          inputMode="numeric"
           value={priceDraft}
           onChange={(e) => setPriceDraft(e.target.value)}
-          placeholder="29.99"
+          placeholder="5000"
         />
       </SubScreen>
 

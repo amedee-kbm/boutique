@@ -44,7 +44,7 @@ const product = {
   name: 'Floral Dress',
   slug: 'floral-dress',
   description: 'Lovely',
-  price: '29.99',
+  price: '5000',
   categoryId: 'c1',
   visible: true,
   images: [],
@@ -91,7 +91,7 @@ describe('ProductEditor (create)', () => {
     await user.type(screen.getByLabelText('Product title'), 'Floral Dress')
 
     await user.click(screen.getByRole('button', { name: /set price/i }))
-    await user.type(await screen.findByLabelText('Price'), '21.99')
+    await user.type(await screen.findByLabelText('Price (RWF)'), '21.99')
     await user.click(screen.getByRole('button', { name: 'Done' }))
 
     await user.click(screen.getByRole('button', { name: 'Save' }))
@@ -188,7 +188,7 @@ describe('ProductEditor (edit)', () => {
   it('prefills fields from the product and uses the persisted managers', () => {
     render(<ProductEditor categories={categories} product={product} />)
     expect(screen.getByLabelText('Product title')).toHaveValue('Floral Dress')
-    expect(screen.getByText('$29.99')).toBeInTheDocument()
+    expect(screen.getByText('RWF 5,000')).toBeInTheDocument()
     expect(screen.getByText('Dresses')).toBeInTheDocument()
     // Edit mode shows the persisted image manager, not the staging dropzone.
     expect(screen.getByText('image-manager')).toBeInTheDocument()

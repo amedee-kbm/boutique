@@ -58,7 +58,12 @@ export function CategoriesTable({ categories }: { categories: Category[] }) {
                   <CategoryDialog
                     category={category}
                     trigger={
-                      <Button variant="ghost" size="icon-sm" aria-label="Edit category">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        className="size-11 md:size-7"
+                        aria-label="Edit category"
+                      >
                         <Pencil className="size-4" />
                       </Button>
                     }
@@ -73,7 +78,12 @@ export function CategoriesTable({ categories }: { categories: Category[] }) {
                     successMessage="Category deleted"
                     onConfirm={() => deleteCategory(category.id)}
                     trigger={
-                      <Button variant="ghost" size="icon-sm" aria-label="Delete category">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        className="size-11 md:size-7"
+                        aria-label="Delete category"
+                      >
                         <Trash2 className="text-destructive size-4" />
                       </Button>
                     }

@@ -1,3 +1,4 @@
+import { isValidElement } from 'react'
 import { Button as ButtonPrimitive } from '@base-ui/react/button'
 import { cva, type VariantProps } from 'class-variance-authority'
 
@@ -44,11 +45,20 @@ function Button({
   className,
   variant = 'default',
   size = 'default',
+  nativeButton,
+  render,
   ...props
 }: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
+  // When `render` is an anchor (e.g. a Next <Link href>), it is no longer a
+  // native <button> — Base UI warns unless we say so explicitly.
+  const rendersAnchor =
+    isValidElement<{ href?: unknown }>(render) && render.props.href !== undefined
+
   return (
     <ButtonPrimitive
       data-slot="button"
+      render={render}
+      nativeButton={nativeButton ?? !rendersAnchor}
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />

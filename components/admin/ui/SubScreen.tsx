@@ -38,7 +38,13 @@ export function SubScreen({
       <SheetContent
         side="bottom"
         showCloseButton={false}
-        className="gap-0 p-0 data-[side=bottom]:h-[92dvh]"
+        className={
+          'gap-0 p-0 data-[side=bottom]:h-[92dvh] ' +
+          // Desktop: a full-height bottom sheet for one focused field is wrong —
+          // render as a centered, constrained modal instead (md+).
+          'md:data-[side=bottom]:inset-x-auto md:data-[side=bottom]:top-1/2 md:data-[side=bottom]:bottom-auto md:data-[side=bottom]:left-1/2 md:data-[side=bottom]:h-auto md:data-[side=bottom]:max-h-[80dvh] md:data-[side=bottom]:w-[min(28rem,calc(100vw-2rem))] md:data-[side=bottom]:-translate-x-1/2 md:data-[side=bottom]:-translate-y-1/2 md:data-[side=bottom]:rounded-2xl md:data-[side=bottom]:border ' +
+          'md:data-[side=bottom]:data-ending-style:-translate-y-1/2 md:data-[side=bottom]:data-starting-style:-translate-y-1/2'
+        }
       >
         <header className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 border-b px-3 py-2.5">
           <div className="justify-self-start">

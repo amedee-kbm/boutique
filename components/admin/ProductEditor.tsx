@@ -187,7 +187,7 @@ export function ProductEditor({
   }
 
   return (
-    <div className="space-y-5">
+    <div className="mx-auto max-w-2xl space-y-5">
       <EditorHeader
         center={<StatusSelector visible={visible} onChange={setVisible} />}
         saveType="button"
